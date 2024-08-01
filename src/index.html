@@ -15,9 +15,17 @@
       <!-- Path to images as from index.html file -->
     </section>
     <form class="search-form js-form">
-      <input type="text" name="searchImg" placeholder="Search images" />
+      <input
+        type="text"
+        name="searchImg"
+        placeholder="Search images"
+        autocomplete="off"
+      />
       <button type="submit">Search</button>
     </form>
+
+    <div class="loader" hidden></div>
+
     <ul class="image-list js-list"></ul>
 
     <!-- Loads the specified .html file -->

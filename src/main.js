@@ -1,45 +1,54 @@
 import createMarkup from './js/render-functions';
+import { fetchImg } from './js/pixabay-api';
+
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
+
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const elements = {
   searchForm: document.querySelector('.js-form'),
   imageList: document.querySelector('.js-list'),
+  loader: document.querySelector('.loader'),
 };
 
 elements.searchForm.addEventListener('submit', handlerSearch);
-let searchedImg = '';
 
 function handlerSearch(evn) {
   evn.preventDefault();
-  searchedImg = evn.currentTarget.elements.searchImg.value.trim();
+
+  let searchedImg = evn.currentTarget.elements.searchImg.value.trim();
+
   if (searchedImg === '') {
-    console.log('add value');
+    iziToast.show({
+      message: 'Please, input what are you searching!',
+      color: 'red',
+      position: 'topCenter',
+    });
     return;
   }
-  fetchImg()
-    .then(({ hits }) => (elements.imageList.innerHTML = createMarkup(hits)))
+
+  elements.loader.hidden = false;
+  console.dir(elements.loader);
+
+  fetchImg(searchedImg)
+    .then(({ hits }) => {
+      if (hits.length === 0) {
+        iziToast.show({
+          message:
+            'Sorry, there are no images matching your search query. Please try again!',
+          color: 'red',
+          position: 'topCenter',
+        });
+      }
+      elements.imageList.innerHTML = createMarkup(hits);
+      let gallery = new SimpleLightbox('.image-list a');
+      gallery.refresh();
+    })
     .catch(error => console.log(error));
-  console.log('in handler', searchedImg);
-}
 
-const API_KEY = '40437222-3b8e1aead0ae08f3118e12752';
-const API = 'https://pixabay.com/api/';
+  elements.loader.hidden = true;
 
-const params = new URLSearchParams({
-  key: API_KEY,
-  q: `${searchedImg}`,
-  image_type: 'photo',
-  orientation: 'horizontal',
-  safesearch: 'true',
-});
-console.log('not handler', searchedImg);
-const url = `${API}?${params}`;
-console.log(url);
-
-function fetchImg() {
-  return fetch(url).then(response => {
-    if (!response.ok) {
-      throw new Error(response.status);
-    }
-    return response.json();
-  });
+  evn.target.reset();
 }
