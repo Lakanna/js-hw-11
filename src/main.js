@@ -52,3 +52,22 @@ function handlerSearch(evn) {
 
   evn.target.reset();
 }
+
+// const promis = new Promise((resolve, reject) => {
+//   if (1 > 2) {
+//     resolve('On resolve');
+//   } else {
+//     reject('In error');
+//   }
+// });
+
+// promis
+//   .then(value => {
+//     console.log(value);
+//   })
+//   .catch(error => {
+//     console.log(error);
+//   })
+//   .finally(() => {
+//     console.log('after all');
+//   });
